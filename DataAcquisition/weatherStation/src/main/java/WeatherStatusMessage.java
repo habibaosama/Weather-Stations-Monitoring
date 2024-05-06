@@ -11,8 +11,6 @@ public class WeatherStatusMessage {
     public double temperature;
     public double wind_speed;
 
-    public WeatherStatusMessage() {
-    }
 
     public WeatherStatusMessage(String station_id) {
         this.station_id = station_id;

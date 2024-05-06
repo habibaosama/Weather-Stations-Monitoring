@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class Main {
     /**
      * Main method to run the WeatherStationProducer.
@@ -8,7 +10,7 @@ public class Main {
      *
      * @param args command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         //System.out.println(args[0] + " " + args[1] + " " + args[2]);
         //WeatherStationProducer produce = new WeatherStationProducer(args[0], args[1], args[2]);
         WeatherStationProducer produce = new WeatherStationProducer("1", "50", "60");
