@@ -6,12 +6,11 @@ import org.json.JSONArray;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
 
-public class WeatherStationProducer {
+public class WeatherStationAdapter {
     private static final Random RANDOM = new Random();
     private final Properties properties;
     private final String stationId;
@@ -19,7 +18,7 @@ public class WeatherStationProducer {
     private final String longitude;
     private final static String TOPIC_NAME = "test";
 
-    public WeatherStationProducer(String stationId, String latitude, String longitude) {
+    public WeatherStationAdapter(String stationId, String latitude, String longitude) {
         this.stationId = stationId;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -61,16 +60,17 @@ public class WeatherStationProducer {
         JSONArray temperature = weather.getTemperature();
         JSONArray humidity = weather.getHumidity();
         JSONArray windSpeed = weather.getWindSpeed();
-        WeatherStatusMessage message = new WeatherStatusMessage(this.stationId);
+        WeatherMessageBuilder message = new WeatherMessageBuilder(this.stationId);
         int count = 0;
-       // long currentUnixTimestamp = (System.currentTimeMillis() / 1000L) - 1;
+
 
         // message generation and sending
         while (true) {
-           // currentUnixTimestamp++;
+
             s_no++;
             if (isDrop()) {
-             // checks if it's time to update the weather data every 24 iterations
+                 // checks if it's time to update the weather data every 24 iterations
+                // to ensure that the data being sent to Kafka is relatively fresh and reflects the latest weather conditions.
                 if ((s_no % 24) == 1) {
                     weather = collectDataApi.getData();
                     temperature = weather.getTemperature();

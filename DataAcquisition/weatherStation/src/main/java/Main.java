@@ -11,9 +11,13 @@ public class Main {
      * @param args command line arguments
      */
     public static void main(String[] args) throws IOException {
+        // i will take station type
         //System.out.println(args[0] + " " + args[1] + " " + args[2]);
-        //WeatherStationProducer produce = new WeatherStationProducer(args[0], args[1], args[2]);
-        WeatherStationProducer produce = new WeatherStationProducer("1", "50", "60");
-        produce.produce();
+
+        //String [] ar = {"Mock","1","52","13"};
+        String [] ar = {"meteo","1","52","13"};
+        StationFactory.generateStation(ar);
+        //WeatherStationAdapter produce = new WeatherStationAdapter("1", "50", "60");
+        //produce.produce();
     }
 }

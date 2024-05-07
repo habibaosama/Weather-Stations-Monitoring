@@ -1,7 +1,7 @@
 
 import java.util.Random;
 
-public class WeatherStatusMessage {
+public class WeatherMessageBuilder {
     private static final Random RANDOM = new Random();
     public static long s_no;
     public String station_id;
@@ -12,7 +12,10 @@ public class WeatherStatusMessage {
     public double wind_speed;
 
 
-    public WeatherStatusMessage(String station_id) {
+    public WeatherMessageBuilder(){}
+
+
+    public WeatherMessageBuilder(String station_id) {
         this.station_id = station_id;
     }
 
@@ -21,7 +24,7 @@ public class WeatherStatusMessage {
      *
      * @return battery status
      */
-    private static String getBatteryStatus() {
+    public static String getBatteryStatus() {
         int rand = RANDOM.nextInt(10);
         if (rand < 3) {
             return "low";
