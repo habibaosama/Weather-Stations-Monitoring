@@ -16,7 +16,7 @@ public class WeatherStationMock {
     private final String stationId;
     private final String latitude;
     private final String longitude;
-    private final static String TOPIC_NAME = "test";
+    private final static String TOPIC_NAME = "weather-station-topic";
 
     public WeatherStationMock(String stationId, String latitude, String longitude) {
         this.stationId = stationId;
