@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class ParquetFileWriter {
 
-    private static final int FLUSH_THRESHOLD = 10000;// Write records in batches (10000 records/batch) to the parquet to avoid blocking on IO frequently
+    private static final int FLUSH_THRESHOLD = 30;// Write records in batches (10000 records/batch) to the parquet to avoid blocking on IO frequently
     private static final HashMap<String, Integer> parquetRecordSize = new HashMap<>();// Keep track of the number of records written to the parquet file
     private static final HashMap<String, Integer> parquetVersion = new HashMap<>();// Keep track of the version of the parquet file
     private static final Map<Path, ParquetWriter<Group>> parquetWriter = new HashMap<>();// Keep track of the parquet writer
@@ -28,7 +28,7 @@ public class ParquetFileWriter {
         return Types.buildMessage()
                 .addField(createField(PrimitiveType.PrimitiveTypeName.INT64, "station_id"))
                 .addField(createField(PrimitiveType.PrimitiveTypeName.INT64, "s_no"))
-                .addField(createField(PrimitiveType.PrimitiveTypeName.BINARY, "battery_status"))
+                .addField(createField(PrimitiveType.PrimitiveTypeName.BINARY, "battery_status", OriginalType.UTF8))
                 .addField(createField(PrimitiveType.PrimitiveTypeName.INT64, "status_timestamp"))
                 .addField(createField(PrimitiveType.PrimitiveTypeName.INT32, "humidity"))
                 .addField(createField(PrimitiveType.PrimitiveTypeName.INT32, "temperature"))
@@ -38,6 +38,10 @@ public class ParquetFileWriter {
 
     private static Type createField(PrimitiveType.PrimitiveTypeName type, String name) {// Create a field for the Parquet schema
         return Types.required(type).named(name);
+    }
+
+    private static Type createField(PrimitiveType.PrimitiveTypeName type, String name, OriginalType originalType) {// Create a field for the Parquet schema
+        return Types.required(type).as(originalType).named(name);
     }
 
     // Initialize the ParquetFileWriter
