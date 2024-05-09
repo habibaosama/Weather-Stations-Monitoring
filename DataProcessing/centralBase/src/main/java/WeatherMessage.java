@@ -8,7 +8,7 @@ import org.apache.parquet.schema.MessageType;
 import java.io.Serializable;
 import java.util.HashMap;
 
-
+// This class represents a weather message
 @Data
 public class WeatherMessage implements Serializable {
     private String stationId;
@@ -19,6 +19,7 @@ public class WeatherMessage implements Serializable {
     private String temperature;
     private String windSpeed;
 
+    // Initialize the WeatherMessage
     public WeatherMessage(HashMap<String, String> msg) {
         this.stationId = msg.get("station_id");
         this.sNo = msg.get("s_no");
@@ -29,8 +30,9 @@ public class WeatherMessage implements Serializable {
         this.windSpeed = msg.get("wind_speed");
     }
 
+    // Group the weather message
     public Group grouping(MessageType schema) {
-        GroupFactory groupFactory = new SimpleGroupFactory(schema);
+        GroupFactory groupFactory = new SimpleGroupFactory(schema);// Create a group factory
         Group weatherStatusGroup = groupFactory.newGroup();
         weatherStatusGroup.add("station_id", Long.parseLong(stationId));
         weatherStatusGroup.add("s_no", Long.parseLong(sNo));
@@ -42,6 +44,7 @@ public class WeatherMessage implements Serializable {
         return weatherStatusGroup;
     }
 
+    // Convert the weather message to a string
     @Override
     public String toString() {
         return "{station_id:" + this.stationId +
