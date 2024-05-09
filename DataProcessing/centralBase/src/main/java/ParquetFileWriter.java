@@ -9,6 +9,8 @@ import org.apache.parquet.hadoop.util.HadoopOutputFile;
 import org.apache.parquet.schema.*;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +20,7 @@ public class ParquetFileWriter {
     private static final HashMap<String, Integer> parquetRecordSize = new HashMap<>();// Keep track of the number of records written to the parquet file
     private static final HashMap<String, Integer> parquetVersion = new HashMap<>();// Keep track of the version of the parquet file
     private static final Map<Path, ParquetWriter<Group>> parquetWriter = new HashMap<>();// Keep track of the parquet writer
-    private static final Long timestamp = System.currentTimeMillis();
+    private Long timestamp = System.currentTimeMillis();
     private final Configuration hadoopConfig;// Hadoop configuration
     private static final MessageType parquetSchema = createParquetSchema();// Parquet schema
 
@@ -67,7 +69,8 @@ public class ParquetFileWriter {
 
     // Create a path for the Parquet file
     private Path createParquetPath(WeatherMessage weatherStatus) {
-        return new Path("ParquetFiles/", "Station_" + weatherStatus.getStationId() + "/"
+        String currDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        return new Path("ParquetFiles/", currDate + "/Station_" + weatherStatus.getStationId() + "/"
                 + "Version_" + parquetVersion.get(weatherStatus.getStationId()) + "_" + timestamp + ".parquet");
     }
 
@@ -96,7 +99,7 @@ public class ParquetFileWriter {
         if (parquetRecordSize.get(weatherStatus.getStationId()) >= FLUSH_THRESHOLD) {
             System.out.println("Flushing the parquet file");
             writer.close();// Close the Parquet writer
-
+            timestamp = System.currentTimeMillis();// Update the timestamp
             // Remove the Parquet writer, reset the record size and update the record version
             parquetRecordSize.put(weatherStatus.getStationId(), 0);
             parquetVersion.put(weatherStatus.getStationId(), parquetVersion.get(weatherStatus.getStationId()) + 1);
