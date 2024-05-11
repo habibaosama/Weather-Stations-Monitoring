@@ -25,7 +25,8 @@ public class BaseCentralStation {
     public static void consume() throws Exception {
         // Create a Kafka consumer
         KafkaConsumer kafkaAPI = new KafkaConsumer();
-
+        BitCask bitCask = new BitCask();
+        bitCask.open("src/main/java/test");
         // Create a Parquet file writer
         ParquetFileWriter stationParquetFileWriter = new ParquetFileWriter();
         while (true) {
@@ -34,9 +35,12 @@ public class BaseCentralStation {
             for (String record : records) {
                 if (messagePattern.matcher(record).matches()) {// Check if the record matches the pattern
                     WeatherMessage weatherStatus = new WeatherMessage(parse(record));// Parse the record
+                    bitCask.put(Integer.valueOf(weatherStatus.getStationId()), weatherStatus.toString());// Write the record to the BitCask
                     stationParquetFileWriter.write(weatherStatus);// Write the record to a Parquet file
+
                 }
             }
         }
+
     }
 }
