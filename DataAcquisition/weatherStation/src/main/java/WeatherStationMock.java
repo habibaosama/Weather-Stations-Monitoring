@@ -73,9 +73,8 @@ public class WeatherStationMock {
                 continue;
             }
             message.generateWeatherStatusMessage(s_no, timeStamp, temperature, humidity, windSpeed);
-            System.out.println("gwa mock "+ s_no+"timestamp "+ timeStamp);
-            String value = message.toString();
 
+            String value = message.toString();
             ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC_NAME, value);
             producer.send(record);
             System.out.println("Sent message: " + value);

@@ -1,9 +1,11 @@
 import java.io.IOException;
 
+
 public class Main {
     /**
      * Main method to run the WeatherStationProducer.
-     * Arguments: station number, latitude and longitude.
+     * Arguments: type, station number, latitude and longitude.
+     * type : Mock ,Meteo
      * station number: 1 -> 10.
      * latitude: -90 -> 90.
      * longitude: -180 -> 180.
@@ -11,12 +13,24 @@ public class Main {
      * @param args command line arguments
      */
     public static void main(String[] args) throws IOException {
-        // i will take station type
-        //System.out.println(args[0] + " " + args[1] + " " + args[2]);
+        if (args.length < 4) {
+            System.out.println("Usage: java Main <type> <station_number> <latitude> <longitude>");
+            return;
+        }
 
-        //String [] ar = {"Mock","1","52","13"};
-        String [] ar = {"meteo","1","52","13"};
-        StationFactory.generateStation(ar);
+        // Extracting arguments from command line
+        String type = args[0];
+        int stationNumber = Integer.parseInt(args[1]);
+        double latitude = Double.parseDouble(args[2]);
+        double longitude = Double.parseDouble(args[3]);
+
+        // Print arguments (optional)
+        System.out.println("Type: " + type);
+        System.out.println("Station Number: " + stationNumber);
+        System.out.println("Latitude: " + latitude);
+        System.out.println("Longitude: " + longitude);
+
+        StationFactory.generateStation(args);
         //WeatherStationAdapter produce = new WeatherStationAdapter("1", "50", "60");
         //produce.produce();
     }

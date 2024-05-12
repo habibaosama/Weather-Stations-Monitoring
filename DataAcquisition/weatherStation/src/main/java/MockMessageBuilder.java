@@ -11,13 +11,9 @@ public class MockMessageBuilder extends WeatherMessageBuilder {
     public void generateWeatherStatusMessage(long sNo, long statusTimestamp, Double temperature, int humidity, Double windSpeed) {
         super.s_no = sNo;
         super.status_timestamp = generateRandomTimeStamp();
-        System.out.println("time" +super.status_timestamp);
         super.battery_status = WeatherMessageBuilder.getBatteryStatus();
-        System.out.println("battery" +super.battery_status);
         super.temperature = generateRandomTemperature();
-        System.out.println("temp" +super.temperature);
         super.humidity = generateRandomHumidity();
-        System.out.println("hum" +super.humidity);
         super.wind_speed = generateRandomWindSpeed();
     }
 
