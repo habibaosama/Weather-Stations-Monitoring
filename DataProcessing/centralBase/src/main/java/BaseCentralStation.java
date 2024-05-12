@@ -1,3 +1,6 @@
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -22,25 +25,46 @@ public class BaseCentralStation {
     }
 
     // Consume messages from Kafka and write them to a Parquet file
+
     public static void consume() throws Exception {
         // Create a Kafka consumer
         KafkaConsumer kafkaAPI = new KafkaConsumer();
+
+        // Create a RocksDB instance for valid messages
+        Options options = new Options().setCreateIfMissing(true);
+
+        // Create a BitCask instance
         BitCask bitCask = new BitCask();
+
+        // Open the BitCask
         bitCask.open("src/main/java/test");
+
+        // Create a RocksDB instance for invalid messages
+        RocksDB invalidMessagesDB = RocksDB.open(options, "src/main/java/test_invalid");
+
         // Create a Parquet file writer
         ParquetFileWriter stationParquetFileWriter = new ParquetFileWriter();
+
         while (true) {
             List<String> records = kafkaAPI.consumeMessages();// Consume messages from Kafka
             System.out.println("Records received: " + records.size());
             for (String record : records) {
-                if (messagePattern.matcher(record).matches()) {// Check if the record matches the pattern
-                    WeatherMessage weatherStatus = new WeatherMessage(parse(record));// Parse the record
+                HashMap<String, String> parsedRecord = parse(record);
+                if (messagePattern.matcher(record).matches() && isValidBatteryStatus(parsedRecord.get("battery_status"))) {
+                    // Check if the record matches the pattern and batteryStatus is valid
+                    WeatherMessage weatherStatus = new WeatherMessage(parsedRecord);// Parse the record
                     bitCask.put(Integer.valueOf(weatherStatus.getStationId()), weatherStatus.toString());// Write the record to the BitCask
                     stationParquetFileWriter.write(weatherStatus);// Write the record to a Parquet file
-
+                } else {
+                    // Write the invalid record to the RocksDB for invalid messages
+                    System.out.println("Invalid message: " + record);
+                    invalidMessagesDB.put("Invalid message: ".getBytes(), record.getBytes());
                 }
             }
         }
+    }
 
+    private static boolean isValidBatteryStatus(String batteryStatus) {
+        return "low".equals(batteryStatus) || "medium".equals(batteryStatus) || "high".equals(batteryStatus);
     }
 }
