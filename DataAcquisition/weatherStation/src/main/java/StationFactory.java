@@ -20,7 +20,7 @@ public class StationFactory {
         else if(Objects.equals(parameters[0], "Meteo")) {
             System.out.println("Open Meteo Adapter Station Created.... :)");
             //take arguments from parameters array
-            WeatherStationAdapter produce = new WeatherStationAdapter("1", "50", "60");
+            WeatherStationAdapter produce = new WeatherStationAdapter(stationID, parameters[2], parameters[3]);
             produce.produce();
 
         }

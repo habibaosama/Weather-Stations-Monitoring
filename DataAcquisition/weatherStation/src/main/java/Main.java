@@ -17,6 +17,14 @@ public class Main {
             System.out.println("Usage: java Main <type> <station_number> <latitude> <longitude>");
             return;
         }
+        /*
+        args[0] = System.getenv("stationType");
+        args[1] = System.getenv("stationNumber");
+        args[2] = System.getenv("latitude");
+        args[3] = System.getenv("longitude");
+        */
+
+
 
         // Extracting arguments from command line
         String type = args[0];

@@ -11,6 +11,10 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <stationType>Meteo</stationType>
+        <stationNumber>1</stationNumber>
+        <latitude>31.56</latitude>
+        <longitude>29.32</longitude>
     </properties>
 
     <dependencies>
@@ -53,6 +57,24 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>Main</mainClass>
+                    <arguments>
+                        <argument>${stationType}</argument>
+                        <argument>${stationNumber}</argument>
+                        <argument>${latitude}</argument>
+                        <argument>${longitude}</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>
