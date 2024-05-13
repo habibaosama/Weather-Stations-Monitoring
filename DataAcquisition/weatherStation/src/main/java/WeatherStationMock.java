@@ -14,14 +14,10 @@ public class WeatherStationMock {
     private static final Random RANDOM = new Random();
     private final Properties properties;
     private final String stationId;
-    private final String latitude;
-    private final String longitude;
     private final static String TOPIC_NAME = "weather-station-topic";
 
-    public WeatherStationMock(String stationId, String latitude, String longitude) {
+    public WeatherStationMock(String stationId) {
         this.stationId = stationId;
-        this.latitude = latitude;
-        this.longitude = longitude;
         properties = new Properties();
         // Load Kafka properties from file
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("kafka-config.properties")) {
