@@ -57,6 +57,7 @@ public class BaseCentralStation {
                     stationParquetFileWriter.write(weatherStatus);// Write the record to a Parquet file
                 } else {
                     // Write the invalid record to the RocksDB for invalid messages
+                    System.out.println(messagePattern.matcher(record).matches() + " " + isValidBatteryStatus(parsedRecord.get("battery_status")));
                     System.out.println("Invalid message: " + record);
                     invalidMessagesDB.put("Invalid message: ".getBytes(), record.getBytes());
                 }

@@ -20,7 +20,7 @@ public class ParquetFileWriter {
     private static final HashMap<String, Integer> parquetRecordSize = new HashMap<>();// Keep track of the number of records written to the parquet file
     private static final HashMap<String, Integer> parquetVersion = new HashMap<>();// Keep track of the version of the parquet file
     private static final Map<Path, ParquetWriter<Group>> parquetWriter = new HashMap<>();// Keep track of the parquet writer
-    private Long timestamp = System.currentTimeMillis();
+    private Long timestamp;
     private final Configuration hadoopConfig;// Hadoop configuration
     private static final MessageType parquetSchema = createParquetSchema();// Parquet schema
 
@@ -46,6 +46,7 @@ public class ParquetFileWriter {
 
     // Initialize the ParquetFileWriter
     public ParquetFileWriter() throws IOException {
+        timestamp = System.currentTimeMillis();
         this.hadoopConfig = new Configuration();
         FileSystem parquetFile = FileSystem.get(this.hadoopConfig);
         Path rootDirectory = new Path("ParquetFiles");
@@ -75,7 +76,7 @@ public class ParquetFileWriter {
     private Path createParquetPath(WeatherMessage weatherStatus) {
         String currDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         return new Path("ParquetFiles/", currDate + "/Station_" + weatherStatus.getStationId() + "/"
-                + "Version_" + parquetVersion.get(weatherStatus.getStationId()) + "_" + timestamp + ".parquet");
+                + "Version_" + parquetVersion.get(weatherStatus.getStationId()) + "_S" + weatherStatus.getStationId() + "_"+ timestamp + ".parquet");
     }
 
     // Get or create a Parquet writer
@@ -85,7 +86,7 @@ public class ParquetFileWriter {
             // Create a new Parquet writer
             writer = ParquetWriterCustomization.builder(HadoopOutputFile.fromPath(parquetPath, hadoopConfig))
                     .withType(parquetSchema)
-                    .withCompressionCodec(CompressionCodecName.SNAPPY)
+                    .withCompressionCodec(CompressionCodecName.UNCOMPRESSED)
                     .withWriteMode(org.apache.parquet.hadoop.ParquetFileWriter.Mode.CREATE)
                     .build();
             parquetWriter.put(parquetPath, writer);// Add the Parquet writer to the map
@@ -103,7 +104,6 @@ public class ParquetFileWriter {
         if (parquetRecordSize.get(weatherStatus.getStationId()) >= FLUSH_THRESHOLD) {
             System.out.println("Flushing the parquet file");
             writer.close();// Close the Parquet writer
-            timestamp = System.currentTimeMillis();// Update the timestamp
             // Remove the Parquet writer, reset the record size and update the record version
             parquetRecordSize.put(weatherStatus.getStationId(), 0);
             parquetVersion.put(weatherStatus.getStationId(), parquetVersion.get(weatherStatus.getStationId()) + 1);

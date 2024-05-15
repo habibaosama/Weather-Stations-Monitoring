@@ -16,8 +16,9 @@ public class KafkaConsumer {
 
     public KafkaConsumer() {// This method initializes the Kafka consumer
         props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
+        props.put("bootstrap.servers", "kafka:9092");
         props.put("group.id", "weather-station-consumer-group");
+        props.put("group.instance.id", "Semsem");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
     }
