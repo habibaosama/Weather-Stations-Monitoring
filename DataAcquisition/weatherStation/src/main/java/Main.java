@@ -14,6 +14,15 @@ public class Main {
      * @param args command line arguments
      */
     public static void main(String[] args) throws IOException {
+        args[0] = System.getenv("stationType");
+        args[1] = System.getenv("stationNumber");
+        args[2] = System.getenv("latitude");
+        args[3] = System.getenv("longitude");
+        System.out.println("stationType: " + args[0]);
+        System.out.println("stationNumber: " + args[1]);
+        System.out.println("latitude: " + args[2]);
+        System.out.println("longitude: " + args[3]);
+
         if ((Objects.equals(args[0], "Meteo") && args.length < 4)) {
             System.out.println("Usage: java Main <type> <station_number> <latitude> <longitude>");
             return;
