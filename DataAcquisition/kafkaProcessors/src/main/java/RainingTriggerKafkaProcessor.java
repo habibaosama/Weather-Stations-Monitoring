@@ -15,7 +15,7 @@ public class RainingTriggerKafkaProcessor {
     public RainingTriggerKafkaProcessor() {
         props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "raining-trigger-processor"); // Set the application ID
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); // Set the Kafka server
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092"); // Set the Kafka server
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, org.apache.kafka.common.serialization.Serdes.String().getClass()); // Set the default key serde class
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, org.apache.kafka.common.serialization.Serdes.String().getClass()); // Set the default value serde class
     }
@@ -64,5 +64,12 @@ public class RainingTriggerKafkaProcessor {
 
         KafkaStreams streams = new KafkaStreams(builder.build(), props); // Start the Kafka Streams application
         streams.start(); // Start the Kafka Streams application
+
+        // Block the main thread to keep the application running
+        try {
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
