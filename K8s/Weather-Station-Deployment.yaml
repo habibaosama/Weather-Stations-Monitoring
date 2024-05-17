@@ -50,8 +50,8 @@ spec:
             - name: stationType
               value: "Meteo"
             - name: stationNumber
-              value: "1"
+              value: "2"
             - name: latitude
-                value: "31.78"
+              value: "31.78"
             - name: longitude
               value: "21.256"
