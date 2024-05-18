@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic-kibana-deployment
+  labels:
+    app: elastic-kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastic-kibana
+  template:
+    metadata:
+      name: elastic&kibana-deployment
+      labels:
+        app: elastic-kibana
+    spec:
+      containers:
+        - name: elastic-kibana-deployment
+          image: nshou/elasticsearch-kibana
+          ports:
+            - containerPort: 9200
+            - containerPort: 5601
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-service
+spec:
+  selector:
+    app: elastic-kibana
+  ports:
+    - protocol: TCP
+      port: 9200
+      targetPort: 9200
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-load-balancer
+spec:
+  selector:
+    app: elastic-kibana
+  ports:
+    - protocol: TCP
+      port: 5601
+      targetPort: 5601
+  type: LoadBalancer
