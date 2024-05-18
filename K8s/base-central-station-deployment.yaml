@@ -21,7 +21,7 @@ spec:
             claimName: archive-persistent-volume-claim
       containers:
         - name: base-central-station
-          image: centralbase
+          image: habibaosama24/central-base-image:latest
           volumeMounts:
             - name: base-storage
               mountPath: /ParquetFiles

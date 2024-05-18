@@ -1,1 +1,1 @@
-`docker build -t centralbase .`
+`docker build -t habibaosama24/central-base-image:latest .`

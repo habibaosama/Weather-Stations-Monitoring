@@ -123,9 +123,10 @@ public class ParquetFileWriter {
             outputStream.writeBytes(json);
         }
 
+
         // Create an Elasticsearch client
         RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(new HttpHost("localhost", 9200, "http")));
+                RestClient.builder(new HttpHost("elastic-service", 9200, "http"))); // Updated to use the Kubernetes service
 
         // Index each JSON message in Elasticsearch
         for (String message : jsonMessages) {

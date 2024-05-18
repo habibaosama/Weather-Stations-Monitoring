@@ -8,3 +8,4 @@ may need these command
 
 `kubectl get  services`
 `kubectl port-forward service/kibana-load-balancer 5601:5601`
+`kubectl get svc`

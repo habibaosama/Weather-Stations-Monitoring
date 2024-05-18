@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: weather-station-deployment
+  name: weather-station-1
   labels:
     component: station
 
@@ -28,7 +28,223 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: open-meteo-weather-station-deployment
+  name: weather-station-2
+  labels:
+    component: station
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: station
+  template:
+    metadata:
+      labels:
+        component: station
+    spec:
+      containers:
+        - name: weather-station-container
+          image: weather-station-image:latest
+          imagePullPolicy: Never
+          env:
+            - name: stationType
+              value: "Mock"
+            - name: stationNumber
+              value: "2"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-station-3
+  labels:
+    component: station
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: station
+  template:
+    metadata:
+      labels:
+        component: station
+    spec:
+      containers:
+        - name: weather-station-container
+          image: weather-station-image:latest
+          imagePullPolicy: Never
+          env:
+            - name: stationType
+              value: "Mock"
+            - name: stationNumber
+              value: "3"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-station-4
+  labels:
+    component: station
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: station
+  template:
+    metadata:
+      labels:
+        component: station
+    spec:
+      containers:
+        - name: weather-station-container
+          image: weather-station-image:latest
+          imagePullPolicy: Never
+          env:
+            - name: stationType
+              value: "Mock"
+            - name: stationNumber
+              value: "4"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-station-5
+  labels:
+    component: station
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: station
+  template:
+    metadata:
+      labels:
+        component: station
+    spec:
+      containers:
+        - name: weather-station-container
+          image: weather-station-image:latest
+          imagePullPolicy: Never
+          env:
+            - name: stationType
+              value: "Mock"
+            - name: stationNumber
+              value: "5"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-station-6
+  labels:
+    component: station
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: station
+  template:
+    metadata:
+      labels:
+        component: station
+    spec:
+      containers:
+        - name: weather-station-container
+          image: weather-station-image:latest
+          imagePullPolicy: Never
+          env:
+            - name: stationType
+              value: "Mock"
+            - name: stationNumber
+              value: "6"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-station-7
+  labels:
+    component: station
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: station
+  template:
+    metadata:
+      labels:
+        component: station
+    spec:
+      containers:
+        - name: weather-station-container
+          image: weather-station-image:latest
+          imagePullPolicy: Never
+          env:
+            - name: stationType
+              value: "Mock"
+            - name: stationNumber
+              value: "7"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-station-8
+  labels:
+    component: station
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: station
+  template:
+    metadata:
+      labels:
+        component: station
+    spec:
+      containers:
+        - name: weather-station-container
+          image: weather-station-image:latest
+          imagePullPolicy: Never
+          env:
+            - name: stationType
+              value: "Mock"
+            - name: stationNumber
+              value: "8"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-station-9
+  labels:
+    component: station
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: station
+  template:
+    metadata:
+      labels:
+        component: station
+    spec:
+      containers:
+        - name: weather-station-container
+          image: weather-station-image:latest
+          imagePullPolicy: Never
+          env:
+            - name: stationType
+              value: "Mock"
+            - name: stationNumber
+              value: "9"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-meteo-weather-station-10
   labels:
     component: om-station
 
@@ -50,7 +266,7 @@ spec:
             - name: stationType
               value: "Meteo"
             - name: stationNumber
-              value: "2"
+              value: "10"
             - name: latitude
               value: "31.78"
             - name: longitude
