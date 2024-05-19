@@ -7,7 +7,7 @@ public class Main {
         Bitcask bitCask = new Bitcask();
         bitCask.open("./data");
         for (int i = 0; i < 10000; i++) {
-            bitCask.put(i % 10, "value" + i);
+            bitcask.put(i % 10, "value" + i);
         }
     }
 }

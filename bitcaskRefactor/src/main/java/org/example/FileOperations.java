@@ -28,9 +28,22 @@ public class FileOperations {
         return file.listFiles() == null ? new File[0] : file.listFiles();
     }
 
+    public boolean canCovertToInt(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     public int getSequenceOfFile(File file) {
         String name = file.getName();
-        return Integer.parseInt(name.substring(0, name.indexOf('.')));
+        String seq = name.substring(0, name.indexOf('.'));
+        if (canCovertToInt(seq)) {
+            return Integer.parseInt(seq);
+        }
+        return -1;
     }
 
     public int getMaxSeq(File[] files) {
@@ -86,8 +99,7 @@ public class FileOperations {
             byte[] value = new byte[(int) valueSize];
             raf.read(value);
             return new BitCaskFileEntry(timestamp, keySize, valueSize, key, value);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("Error reading data file entry. File may be corrupted.");
             return null;
         }

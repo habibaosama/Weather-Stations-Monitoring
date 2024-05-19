@@ -102,8 +102,7 @@ public class Bitcask {
                         compact();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
-                    finally {
+                    } finally {
                         isCompacting.set(false);
                     }
                 }).start();
@@ -133,11 +132,7 @@ public class Bitcask {
             deleteOldFiles();
             updateLogIndex(compactedMap);
             renameCompactFiles();
-        }
-        synchronized (getLock) {
             renameRemainingFiles();
-        }
-        synchronized (getLock) {
             synchronized (putLock) {
                 renameActiveFileAndUpdateSeq();
             }
@@ -243,12 +238,16 @@ public class Bitcask {
     }
 
 
-    private void deleteOldFiles() {
+    private synchronized void deleteOldFiles() {
         File[] files = fileOperations.listFiles(parentPath);
         for (File file : files) {
             if (!file.getName().contains(COMPACT_NAME)) {
                 int seq = fileOperations.getSequenceOfFile(file);
                 boolean deleted = true;
+                System.out.println("Deleting file: " + file.getName());
+                if (seq == -1) {
+                    System.err.println("Failed to get sequence of file: " + file.getName());
+                }
                 if (file.getName().endsWith(HINT_EXTENSION) && seq < MAX_SEQ) {
                     deleted = file.delete();
                 } else if (file.getName().endsWith(EXTENSION) && seq < MAX_SEQ) {
