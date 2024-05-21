@@ -2,46 +2,42 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.http.HttpHost;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.hadoop.util.HadoopOutputFile;
 import org.apache.parquet.schema.*;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ParquetFileWriter {
 
-    private static final int FLUSH_THRESHOLD = 30;// Write records in batches (10000 records/batch) to the parquet to avoid blocking on IO frequently
+    private static final int FLUSH_THRESHOLD = 10000;// Write records in batches (10000 records/batch) to the parquet to avoid blocking on IO frequently
     private static final HashMap<String, Integer> parquetRecordSize = new HashMap<>();// Keep track of the number of records written to the parquet file
     private static final HashMap<String, Integer> parquetVersion = new HashMap<>();// Keep track of the version of the parquet file
     private static final Map<Path, ParquetWriter<Group>> parquetWriter = new HashMap<>();// Keep track of the parquet writer
     private Long timestamp;
-    private HashMap<String, ArrayList<String>> jsonMessages = new HashMap<>();
     private final Configuration hadoopConfig;// Hadoop configuration
     private static final MessageType parquetSchema = createParquetSchema();// Parquet schema
 
-    private static MessageType createParquetSchema() {// Create a Parquet schema
+
+    private static MessageType createParquetSchema() {
+        GroupType weatherGroup = Types.buildGroup(Type.Repetition.REQUIRED)
+                .required(PrimitiveType.PrimitiveTypeName.INT32).named("humidity")
+                .required(PrimitiveType.PrimitiveTypeName.INT32).named("temperature")
+                .required(PrimitiveType.PrimitiveTypeName.INT32).named("wind_speed")
+                .named("weather");
+
         return Types.buildMessage()
                 .addField(createField(PrimitiveType.PrimitiveTypeName.INT64, "station_id"))
                 .addField(createField(PrimitiveType.PrimitiveTypeName.INT64, "s_no"))
                 .addField(createField(PrimitiveType.PrimitiveTypeName.BINARY, "battery_status", OriginalType.UTF8))
                 .addField(createField(PrimitiveType.PrimitiveTypeName.INT64, "status_timestamp"))
-                .addField(createField(PrimitiveType.PrimitiveTypeName.INT32, "humidity"))
-                .addField(createField(PrimitiveType.PrimitiveTypeName.INT32, "temperature"))
-                .addField(createField(PrimitiveType.PrimitiveTypeName.INT32, "wind_speed"))
+                .addField(weatherGroup)
                 .named("WeatherStatus");
     }
 
@@ -77,14 +73,8 @@ public class ParquetFileWriter {
         ParquetWriter<Group> writer = getOrCreateWriter(parquetPath);// Get or create a Parquet writer
         writer.write(weatherStatus.grouping(parquetSchema));// Write the record to the Parquet file
 
-        // Get the ArrayList for the station ID or create a new one if it doesn't exist
-        ArrayList<String> stationMessages = jsonMessages.getOrDefault(weatherStatus.getStationId(), new ArrayList<>());
-        stationMessages.add(weatherStatus.toString());
-        jsonMessages.put(weatherStatus.getStationId(), stationMessages);// Add the JSON message to the list
-
         updateRecordSize(weatherStatus);// Update the record size
         flushIfNeeded(weatherStatus, writer, parquetPath);// Flush the Parquet file if threshold is reached
-
     }
 
     // Create a path for the Parquet file
@@ -92,53 +82,6 @@ public class ParquetFileWriter {
         String currDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         return new Path("ParquetFiles/", currDate + "/Station_" + weatherStatus.getStationId() + "/"
                 + "Version_" + parquetVersion.get(weatherStatus.getStationId()) + "_S" + weatherStatus.getStationId() + "_"+ timestamp + ".parquet");
-    }
-
-    private Path createJSONPath(WeatherMessage weatherStatus) {
-        String currDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        return new Path("JSONFiles/", currDate + "/Station_" + weatherStatus.getStationId() + "/"
-                + "Version_" + parquetVersion.get(weatherStatus.getStationId()) + "_S" + weatherStatus.getStationId() + ".json");
-    }
-
-
-
-    private void writeJSON(ArrayList<String> jsonMessages, Path jsonPath) throws IOException {
-        // Convert the list of JSON messages to a single string
-        String json = String.join(",", jsonMessages);
-
-        FileSystem fs = FileSystem.get(hadoopConfig);
-        if (fs.exists(jsonPath)) {
-            // If the file already exists, read the existing content
-            try (org.apache.hadoop.fs.FSDataInputStream inputStream = fs.open(jsonPath)) {
-                byte[] buffer = new byte[inputStream.available()];
-                inputStream.readFully(buffer);
-                String existingContent = new String(buffer, StandardCharsets.UTF_8);
-                // Append the new content to the existing content
-                json = existingContent + "," + json;
-            }
-        }
-
-        // Write the content to the file
-        try (org.apache.hadoop.fs.FSDataOutputStream outputStream = fs.create(jsonPath, true)) {
-            outputStream.writeBytes(json);
-        }
-
-
-        // Create an Elasticsearch client
-        RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(new HttpHost("elastic-service", 9200, "http"))); // Updated to use the Kubernetes service
-
-        // Index each JSON message in Elasticsearch
-        for (String message : jsonMessages) {
-            IndexRequest request = new IndexRequest("weather");
-            request.source(message, XContentType.JSON);
-
-            // Send the index to Elasticsearch
-            client.index(request, RequestOptions.DEFAULT);
-        }
-
-        // Close the Elasticsearch client
-        client.close();
     }
 
     // Get or create a Parquet writer
@@ -163,7 +106,6 @@ public class ParquetFileWriter {
 
     // Flush the Parquet file if threshold is reached
     private void flushIfNeeded(WeatherMessage weatherStatus, ParquetWriter<Group> writer, Path parquetPath) throws IOException {
-        Path jsonPath = createJSONPath(weatherStatus);
         if (parquetRecordSize.get(weatherStatus.getStationId()) >= FLUSH_THRESHOLD) {
             System.out.println("Flushing the parquet file");
             writer.close();// Close the Parquet writer
@@ -171,16 +113,8 @@ public class ParquetFileWriter {
             parquetRecordSize.put(weatherStatus.getStationId(), 0);
             parquetVersion.put(weatherStatus.getStationId(), parquetVersion.get(weatherStatus.getStationId()) + 1);
             parquetWriter.remove(parquetPath);
-
-            // Write JSON messages to file
-            ArrayList<String> stationMessages = jsonMessages.get(weatherStatus.getStationId());
-            if (stationMessages != null) {
-                writeJSON(stationMessages, jsonPath);
-                stationMessages.clear(); // Clear the list after writing to file
-            }
         }
     }
-
 
 
 }

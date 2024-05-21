@@ -1,4 +1,5 @@
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.GroupFactory;
@@ -8,7 +9,6 @@ import org.apache.parquet.schema.MessageType;
 import java.io.Serializable;
 import java.util.HashMap;
 
-// This class represents a weather message
 @Data
 public class WeatherMessage implements Serializable {
     private String stationId;
@@ -32,15 +32,19 @@ public class WeatherMessage implements Serializable {
 
     // Group the weather message
     public Group grouping(MessageType schema) {
-        GroupFactory groupFactory = new SimpleGroupFactory(schema);// Create a group factory
+        GroupFactory groupFactory = new SimpleGroupFactory(schema); // Create a group factory
         Group weatherStatusGroup = groupFactory.newGroup();
+
         weatherStatusGroup.add("station_id", Long.parseLong(stationId));
         weatherStatusGroup.add("s_no", Long.parseLong(sNo));
         weatherStatusGroup.add("battery_status", batteryStatus);
         weatherStatusGroup.add("status_timestamp", Long.parseLong(statusTimestamp));
-        weatherStatusGroup.add("humidity", (int) Float.parseFloat(humidity));
-        weatherStatusGroup.add("temperature", (int) Float.parseFloat(temperature));
-        weatherStatusGroup.add("wind_speed", (int) Float.parseFloat(windSpeed));
+
+        Group weatherGroup = weatherStatusGroup.addGroup("weather");
+        weatherGroup.add("humidity", (int) Float.parseFloat(humidity));
+        weatherGroup.add("temperature", (int) Float.parseFloat(temperature));
+        weatherGroup.add("wind_speed", (int) Float.parseFloat(windSpeed));
+
         return weatherStatusGroup;
     }
 
