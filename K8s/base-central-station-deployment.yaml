@@ -3,17 +3,17 @@ kind: Deployment
 metadata:
   name: base-central-station-deployment
   labels:
-    component: base
+    app: base
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: base-central-station  # Updated selector label
+      app: base
   template:
     metadata:
       labels:
-        component: base-central-station  # Updated template label
+        app: base
     spec:
       volumes:
         - name: base-storage
@@ -21,11 +21,9 @@ spec:
             claimName: archive-persistent-volume-claim
       containers:
         - name: base-central-station
-          image: habibaosama24/central-base-image:latest
+          image: maiahmedhussein/central-base-deployment-image:latest
           volumeMounts:
             - name: base-storage
-              mountPath: /ParquetFiles
-              subPath: ParquetFiles
+              mountPath: central-base/ParquetFiles
             - name: base-storage
-              mountPath: /bitCaskStore
-              subPath: bitCaskStore
+              mountPath: central-base/src/main/java/test
