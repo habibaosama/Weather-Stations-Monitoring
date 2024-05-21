@@ -1,4 +1,3 @@
-package org.example;
 
 /**
  * This class represents a BitCask file entry.

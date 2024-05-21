@@ -1,4 +1,3 @@
-package org.example;
 
 /**
  * This class represents a HintFileEntry with a timestamp, key, keySize, valueSize, and valueOffset.

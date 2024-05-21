@@ -1,5 +1,3 @@
-package org.example;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -12,11 +10,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Bitcask {
+public class BitCask {
     public static final String EXTENSION = ".BitCask";
     public static final String HINT_EXTENSION = ".Hint.BitCask";
     public static final String COMPACT_NAME = "compact";
-    private static final int MAX_FILE_SIZE = 1024 * 2; // 1GB
+    private static final int MAX_FILE_SIZE = 1024 * 4; //4KB
     private static final int MAX_SEQ = 5;
     private final ConcurrentHashMap<Integer, FilePointer> logIndex;
     private final FileOperations fileOperations;
@@ -29,11 +27,12 @@ public class Bitcask {
     private RandomAccessFile rafActiveFile;
     private long dirCreationTime;
 
-    public Bitcask() {
+    public BitCask() {
         currentSeq = new AtomicLong(0);
         this.logIndex = new ConcurrentHashMap<>();
         this.fileOperations = new FileOperations();
     }
+
 
 
     private void recover(File[] files) throws IOException {

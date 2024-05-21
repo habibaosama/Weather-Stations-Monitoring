@@ -1,4 +1,3 @@
-package org.example;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,8 +5,6 @@ import java.io.RandomAccessFile;
 import java.util.Map;
 import java.util.Set;
 
-import static org.example.Bitcask.EXTENSION;
-import static org.example.Bitcask.HINT_EXTENSION;
 
 public class FileOperations {
 
@@ -39,7 +36,11 @@ public class FileOperations {
 
     public int getSequenceOfFile(File file) {
         String name = file.getName();
-        String seq = name.substring(0, name.indexOf('.'));
+        int dotIndex = name.indexOf('.');
+        if (dotIndex == -1) {
+            return -1;
+        }
+        String seq = name.substring(0, dotIndex);
         if (canCovertToInt(seq)) {
             return Integer.parseInt(seq);
         }
@@ -145,7 +146,7 @@ public class FileOperations {
 
     public void recoverHintFiles(File[] files, Set<Integer> fileIds, Map<Integer, FilePointer> logIndex) throws IOException {
         for (File file : files) {
-            if (file.getName().endsWith(HINT_EXTENSION)) {
+            if (file.getName().endsWith(BitCask.HINT_EXTENSION)) {
                 int fileId = getSequenceOfFile(file);
                 if (!fileIds.contains(fileId)) {
                     readHintFile(file, logIndex);
@@ -157,7 +158,7 @@ public class FileOperations {
 
     public void recoverDataFiles(File[] files, Set<Integer> fileIds, Map<Integer, FilePointer> logIndex) throws IOException {
         for (File file : files) {
-            if (file.getName().endsWith(EXTENSION)) {
+            if (file.getName().endsWith(BitCask.EXTENSION)) {
                 int fileId = getSequenceOfFile(file);
                 if (!fileIds.contains(fileId)) {
                     readDataFile(file, logIndex);

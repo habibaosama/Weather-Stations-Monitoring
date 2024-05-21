@@ -1,4 +1,4 @@
-package org.example;
+
 
 /**
  * This class represents a DataPointer with a fileId, valueSize, valueOffset, and timestamp.
